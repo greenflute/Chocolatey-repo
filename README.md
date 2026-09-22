@@ -21,3 +21,9 @@ Tokcos package IDs:
 tokcos-cli
 tokcos-work
 ```
+
+Other package IDs:
+
+```text
+aardio
+```
