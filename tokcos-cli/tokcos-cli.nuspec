@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2015/06/nuspec.xsd">
+  <metadata>
+    <id>tokcos-cli</id>
+    <version>0.5.8</version>
+    <title>Tokcos CLI</title>
+    <authors>Tokcos</authors>
+    <owners>greenflute</owners>
+    <projectUrl>https://www.tokcos.com/</projectUrl>
+    <packageSourceUrl>https://github.com/greenflute/Chocolatey-repo/tree/main/tokcos-cli</packageSourceUrl>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <tags>tokcos ai coding assistant cli terminal</tags>
+    <summary>Token-efficient AI coding assistant for the terminal</summary>
+    <description>Tokcos CLI is a token-efficient AI coding assistant that runs in the terminal. This package downloads the official 64-bit Windows distribution from Tokcos.</description>
+  </metadata>
+  <files>
+    <file src="tools\**" target="tools" />
+  </files>
+</package>

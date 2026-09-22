@@ -1,15 +1,23 @@
-# Chocolatey-repo
+# Chocolatey repository
 
-Chocolatey repo
+Personal Chocolatey repository for Tokcos and other useful Windows software.
 
-## build
+## Build a package
 
-```
+```powershell
+cd <package-directory>
 choco pack
 ```
 
-## local test
+## Local test
 
+```powershell
+choco install <package-id> --source . --yes
 ```
-choco install -y aardio -s .
+
+Tokcos package IDs:
+
+```text
+tokcos-cli
+tokcos-work
 ```

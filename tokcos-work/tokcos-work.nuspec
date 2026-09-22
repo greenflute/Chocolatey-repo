@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2015/06/nuspec.xsd">
+  <metadata>
+    <id>tokcos-work</id>
+    <version>1.2.2</version>
+    <title>Tokcos Work</title>
+    <authors>Tokcos</authors>
+    <owners>greenflute</owners>
+    <projectUrl>https://www.tokcos.com/</projectUrl>
+    <packageSourceUrl>https://github.com/greenflute/Chocolatey-repo/tree/main/tokcos-work</packageSourceUrl>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <tags>tokcos ai workflow mcp desktop</tags>
+    <summary>Desktop app for building AI workflows and managing local MCP servers</summary>
+    <description>Tokcos Work is a desktop app for visually building workflows, managing local MCP servers, and monitoring agent logs. This package downloads the official 64-bit Windows installer from Tokcos.</description>
+  </metadata>
+  <files>
+    <file src="tools\**" target="tools" />
+  </files>
+</package>
