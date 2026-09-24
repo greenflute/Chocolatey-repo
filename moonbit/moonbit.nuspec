@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2015/06/nuspec.xsd">
+  <metadata>
+    <id>moonbit</id>
+    <version>0.10.14+7d59c7ec9</version>
+    <title>MoonBit Toolchain</title>
+    <authors>MoonBit Team</authors>
+    <owners>greenflute</owners>
+    <projectUrl>https://www.moonbitlang.com/</projectUrl>
+    <packageSourceUrl>https://github.com/greenflute/Chocolatey-repo/tree/main/moonbit</packageSourceUrl>
+    <licenseUrl>https://www.moonbitlang.com/licenses/moonbit-public-source-license-v1</licenseUrl>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <tags>moonbit programming language compiler toolchain cli portable</tags>
+    <summary>MoonBit programming language toolchain</summary>
+    <description>The official MoonBit compiler, build tools, language server, runtime tools, and core library. This unofficial Chocolatey package downloads the complete official 64-bit Windows portable distribution directly from MoonBit.</description>
+  </metadata>
+  <files>
+    <file src="tools\**" target="tools" />
+  </files>
+</package>
