@@ -7,8 +7,8 @@ if (-not [Environment]::Is64BitOperatingSystem) {
 $packageArgs = @{
   packageName    = $env:ChocolateyPackageName
   fileType       = 'exe'
-  url            = 'https://tokcos-1328134559.cos.ap-guangzhou.myqcloud.com/tokcos-gui/release/1.2.2/Tokcos%20Work-1.2.2-x64.exe'
-  checksum       = '0741343806de3eac3a10584b61935234b1d9e60c9d79e4744be150012c7e5af8'
+  url            = 'https://tokcos-1328134559.cos.ap-guangzhou.myqcloud.com/tokcos-gui/release/1.2.4/Tokcos%20Work-1.2.4-x64.exe'
+  checksum       = 'c2cd4795e729c487e5faba435141a99dd312721090cd2cd4e307d30b53ac40fb'
   checksumType   = 'sha256'
   silentArgs     = '/S'
   validExitCodes = @(0)
