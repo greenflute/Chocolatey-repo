@@ -1,8 +1,8 @@
 name: Bump package versions
 
-# Keeps the Chocolatey packages in this repository in step with the upstream
-# Tokcos releases.  Chocolatey has no self-update mechanism for a package
-# definition, so without this the versions here only change by hand.
+# Keeps the Chocolatey packages in this repository in step with their upstream
+# releases.  Chocolatey has no self-update mechanism for a package definition, so
+# without this the versions here only change by hand.
 #
 # Why 03:17 UTC and not 03:00: GitHub documents that scheduled runs are delayed
 # when the platform is busy, and that "high load times include the start of every
@@ -15,6 +15,9 @@ name: Bump package versions
 #
 # Only the version check runs daily.  Artifacts are downloaded (and the checksums
 # therefore recomputed from the real bytes) only when a version actually changed.
+# aardio is the exception: it republishes one unversioned URL in place, so its
+# ~7 MB artifact is fetched every run -- that check is the only way to tell
+# whether the checksum is still good.
 #
 # This workflow only rewrites the package definitions; it does not `choco pack` or
 # push to the Chocolatey community feed, which stays a separate deliberate step.
@@ -56,6 +59,14 @@ jobs:
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add tokscos-cli/tokcos-cli.nuspec tokscos-cli/tools/chocolateyinstall.ps1
           git commit -m "Update tokscos-cli to ${{ steps.bump.outputs.cli_version }}"
+
+      - name: Commit aardio bump
+        if: steps.bump.outputs.aardio_changed == 'true'
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add aardio/aardio.nuspec aardio/tools/chocolateyinstall.ps1
+          git commit -m "${{ steps.bump.outputs.aardio_subject }}"
 
       - name: Push
         if: steps.bump.outputs.changed == 'true'

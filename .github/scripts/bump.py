@@ -20,10 +20,25 @@ yields a package that reviews cleanly but fails checksum validation on install.
 For tokscos-cli the unpacked binary hash doubles as an identity check: if it does
 not match, the artifact is not the build the metadata describes and the run fails.
 
+Floating-URL packages
+---------------------
+Not every upstream versions its download path.  aardio publishes a single fixed URL
+(`https://d.aardio.com/ide/aardio.7z`) and overwrites that file in place on every
+release -- its own website links to exactly that URL -- so there is no immutable
+per-version artifact to point at and no version segment to rewrite.  For such a
+package the version is read from an upstream metadata endpoint instead, and because
+the bytes behind a fixed URL can move without the reported version moving, the
+declared checksum cannot be assumed to stay valid: it is re-derived from whatever is
+served, on every run.  The package is correct exactly when its (version, checksum)
+pair equals upstream's (reported version, served bytes).  aardio is ~7 MB, which is
+negligible next to the multi-hundred-MB Tokcos artifacts.
+
 Cost
 ----
 Artifacts are downloaded only when the declared version actually changed, so the
-daily run normally performs two small JSON fetches and nothing else.
+daily run normally performs two small JSON fetches and nothing else.  The one
+exception is a floating-URL package, whose artifact is small and is fetched every
+run because checking it is the only way to know it is still current.
 """
 
 from __future__ import annotations
@@ -93,6 +108,34 @@ PACKAGES = (
         binary_hash_key="sha256",
         binary_member="win32-x64/tokcos-cli.exe",
         artifact_name="tokcos-cli-win32-x64.zip",
+    ),
+)
+
+
+@dataclass(frozen=True)
+class FloatingPackage:
+    """A package whose download URL carries no version segment.
+
+    See "Floating-URL packages" in the module docstring: the version comes from a
+    metadata endpoint, the url is never rewritten, and the checksum is re-derived
+    from the served bytes on every run.
+    """
+
+    name: str
+    nuspec: Path
+    install_script: Path
+    meta_url: str
+    #: metadata key holding the version string
+    version_key: str
+
+
+FLOATING_PACKAGES = (
+    FloatingPackage(
+        name="aardio",
+        nuspec=REPO / "aardio/aardio.nuspec",
+        install_script=REPO / "aardio/tools/chocolateyinstall.ps1",
+        meta_url="https://d.aardio.com/ide/check/",
+        version_key="version",
     ),
 )
 
@@ -330,8 +373,98 @@ def bump(package: Package) -> str | None:
     return latest
 
 
+def bump_floating(package: FloatingPackage) -> tuple[str | None, str | None]:
+    """Sync a floating-URL package.  Returns (version, commit_subject), or (None, None).
+
+    The subject is built here rather than in the workflow because a run can end in
+    either of two genuinely different edits: a new version, or the same version with
+    fresh bytes behind it.  Those deserve different commit messages.
+    """
+    meta = fetch_json(package.meta_url)
+    latest = meta[package.version_key]
+    current = declared_nuspec_version(package.nuspec)
+
+    nuspec_text = package.nuspec.read_text(encoding="utf-8")
+    script_text = package.install_script.read_text(encoding="utf-8")
+
+    url_match = re.search(r"(?m)^\s*url\s*=\s*'([^']+)'", script_text)
+    if url_match is None:
+        fail(f"{package.name}: no url = '...' entry in {package.install_script.name}")
+    url = url_match.group(1)
+
+    checksum_match = re.search(rf"(?m)^\s*checksum\s*=\s*'({SHA256_RE})'", script_text)
+    if checksum_match is None:
+        fail(f"{package.name}: no sha256 checksum = '...' entry in {package.install_script.name}")
+    declared_hash = checksum_match.group(1)
+
+    # The whole entry rests on this url being unversioned and stable.  If upstream
+    # ever publishes per-version artifacts, stop: the url no longer means "latest"
+    # and this code path is the wrong one.
+    if latest in url:
+        fail(
+            f"{package.name}: download url {url} now contains {latest}; upstream appears to "
+            "have moved to versioned artifacts, which needs the versioned-url code path"
+        )
+
+    with tempfile.TemporaryDirectory() as workdir:
+        archive = Path(workdir) / urllib.parse.unquote(
+            urllib.parse.urlsplit(url).path.rsplit("/", 1)[-1]
+        )
+        real, size = download(url, archive)
+    log(f"{package.name}: upstream reports {latest}; served artifact {real} ({size} bytes)")
+
+    if current == latest and declared_hash == real:
+        log(f"{package.name}: already at {latest}")
+        return None, None
+
+    if current != latest:
+        log(f"{package.name}: {current} -> {latest}")
+        assert_not_a_downgrade(current, latest, package.name)
+        subject = f"Update {package.name} to {latest}"
+    else:
+        warn(
+            f"{package.name}: upstream still reports {latest} but the served bytes changed "
+            f"({declared_hash} -> {real}); refreshing the checksum"
+        )
+        subject = f"Refresh {package.name} hash for {latest}"
+
+    updated_nuspec = substitute(
+        nuspec_text,
+        r"(<version>)[^<]+(</version>)",
+        lambda m: f"{m.group(1)}{latest}{m.group(2)}",
+        1,
+        f"{package.name} nuspec version",
+    )
+    if declared_nuspec_version_text(updated_nuspec, package.nuspec) != latest:
+        fail(f"{package.name}: rewritten nuspec does not declare {latest}")
+
+    updated_script = substitute(
+        script_text,
+        rf"(?m)^(\s*checksum\s*=\s*)'{SHA256_RE}'",
+        lambda m: f"{m.group(1)}'{real}'",
+        1,
+        f"{package.name} install script checksum",
+    )
+
+    # As in bump(): assert against the exact text to be committed, so the rewrite
+    # can only ever have touched the version and the checksum.  The url must come
+    # through untouched -- that is the point of this code path.
+    if f"<version>{current}</version>" in updated_nuspec and current != latest:
+        fail(f"{package.name}: old version {current} still present in the nuspec")
+    if updated_script.count(real) != 1:
+        fail(f"{package.name}: expected exactly one occurrence of checksum {real}")
+    if url not in updated_script:
+        fail(f"{package.name}: the download url was lost in the rewrite")
+
+    package.nuspec.write_text(updated_nuspec, encoding="utf-8")
+    package.install_script.write_text(updated_script, encoding="utf-8")
+    log(f"  {package.nuspec.relative_to(REPO)} and {package.install_script.relative_to(REPO)} rewritten")
+    return latest, subject
+
+
 def main() -> int:
     versions = {package.name: bump(package) for package in PACKAGES}
+    floating = {package.name: bump_floating(package) for package in FLOATING_PACKAGES}
 
     for package in PACKAGES:
         key = package.name.replace("tokcos-", "")
@@ -339,9 +472,16 @@ def main() -> int:
         set_output(f"{key}_changed", "true" if version else "false")
         set_output(f"{key}_version", version or "")
 
-    set_output("changed", "true" if any(versions.values()) else "false")
-    if not any(versions.values()):
-        log("All Tokcos Chocolatey packages are already up to date.")
+    for package in FLOATING_PACKAGES:
+        version, subject = floating[package.name]
+        set_output(f"{package.name}_changed", "true" if version else "false")
+        set_output(f"{package.name}_version", version or "")
+        set_output(f"{package.name}_subject", subject or "")
+
+    changed = any(versions.values()) or any(version for version, _ in floating.values())
+    set_output("changed", "true" if changed else "false")
+    if not changed:
+        log("All Chocolatey packages are already up to date.")
     return 0
 
 
