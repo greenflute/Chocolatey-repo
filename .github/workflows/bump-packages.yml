@@ -51,21 +51,21 @@ jobs:
         id: bump
         run: python3 .github/scripts/bump.py
 
-      - name: Commit tokscos-work bump
+      - name: Commit tokcos-work bump
         if: steps.bump.outputs.work_changed == 'true'
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add tokscos-work/tokcos-work.nuspec tokscos-work/tools/chocolateyinstall.ps1
-          git commit -m "Update tokscos-work to ${{ steps.bump.outputs.work_version }}"
+          git add tokcos-work/tokcos-work.nuspec tokcos-work/tools/chocolateyinstall.ps1
+          git commit -m "Update tokcos-work to ${{ steps.bump.outputs.work_version }}"
 
-      - name: Commit tokscos-cli bump
+      - name: Commit tokcos-cli bump
         if: steps.bump.outputs.cli_changed == 'true'
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add tokscos-cli/tokcos-cli.nuspec tokscos-cli/tools/chocolateyinstall.ps1
-          git commit -m "Update tokscos-cli to ${{ steps.bump.outputs.cli_version }}"
+          git add tokcos-cli/tokcos-cli.nuspec tokcos-cli/tools/chocolateyinstall.ps1
+          git commit -m "Update tokcos-cli to ${{ steps.bump.outputs.cli_version }}"
 
       - name: Commit aardio bump
         if: steps.bump.outputs.aardio_changed == 'true'

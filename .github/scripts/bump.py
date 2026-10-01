@@ -8,16 +8,16 @@ Checksum policy
 The *served artifact* is the source of truth for every checksum written here,
 because that is what `choco install` downloads and validates.  Upstream
 `latest.json` supplies the version and is cross-checked, but it has been observed
-to be wrong -- tokscos-cli 0.5.9 advertises a win32-x64 `archive` hash and `size`
+to be wrong -- tokcos-cli 0.5.9 advertises a win32-x64 `archive` hash and `size`
 that do not match the zip actually served.  Such a disagreement is surfaced as a
 GitHub warning rather than being silently trusted or silently ignored.
 
-Beware the two schemas: for tokscos-work the usable archive hash is
-`files.<p>.sha256`, whereas for tokscos-cli `platforms.<p>.sha256` is the hash of
+Beware the two schemas: for tokcos-work the usable archive hash is
+`files.<p>.sha256`, whereas for tokcos-cli `platforms.<p>.sha256` is the hash of
 the *unpacked exe* and `platforms.<p>.archive` is the archive.  Getting that wrong
 yields a package that reviews cleanly but fails checksum validation on install.
 
-For tokscos-cli the unpacked binary hash doubles as an identity check: if it does
+For tokcos-cli the unpacked binary hash doubles as an identity check: if it does
 not match, the artifact is not the build the metadata describes and the run fails.
 
 Floating-URL packages
