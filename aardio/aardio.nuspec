@@ -2,7 +2,7 @@
 <package xmlns="http://schemas.microsoft.com/packaging/2015/06/nuspec.xsd">
   <metadata>
     <id>aardio</id>
-    <version>46.3.1</version>
+    <version>46.4.0</version>
     <title>aardio</title>
     <authors>aardio.com</authors>
     <owners>greenflute</owners>
