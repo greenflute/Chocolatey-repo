@@ -5,7 +5,7 @@ $packageArgs = @{
   packageName    = $env:ChocolateyPackageName
   unzipLocation = $toolsDir
   url            = 'https://d.aardio.com/ide/aardio.7z'
-  checksum       = '08e4c6c50043692411de63ed318edd62cbb38cb91b52070fd138daef66ed9263'
+  checksum       = '819cbb779d57be9dc7726bcf5e0b32597f9e9e5d9589d8bc0fe1a633f34107f0'
   checksumType   = 'sha256'
 }
 
