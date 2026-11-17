@@ -8,8 +8,8 @@ $toolsDir = Split-Path -Parent $MyInvocation.MyCommand.Definition
 $packageArgs = @{
   packageName    = $env:ChocolateyPackageName
   unzipLocation = $toolsDir
-  url            = 'https://tokcos-1328134559.cos.ap-guangzhou.myqcloud.com/tokcos-cli/release/2.0.7/tokcos-cli-win32-x64.zip'
-  checksum       = 'd7a137e30abf7b7178d1cac6983894770173bfdfc463120210a9f7a24e4bf238'
+  url            = 'https://tokcos-1328134559.cos.ap-guangzhou.myqcloud.com/tokcos-cli/release/2.0.9/tokcos-cli-win32-x64.zip'
+  checksum       = 'f31f77ca6469722fbfde9e9b94ea78319e7c9fba74f83f7fd852cebbb3ce3ced'
   checksumType   = 'sha256'
 }
 
