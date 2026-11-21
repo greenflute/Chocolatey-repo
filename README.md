@@ -27,6 +27,8 @@ Other package IDs:
 ```text
 aardio
 moonbit
+zditor
+locmodel
 ```
 
 The official MoonBit VS Code extension currently looks for its toolchain under

@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2015/06/nuspec.xsd">
+  <metadata>
+    <id>zditor</id>
+    <version>2.0.9</version>
+    <title>Zditor</title>
+    <authors>Zditor</authors>
+    <owners>greenflute</owners>
+    <projectUrl>https://zditor.com/</projectUrl>
+    <packageSourceUrl>https://github.com/greenflute/Chocolatey-repo/tree/main/zditor</packageSourceUrl>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <tags>zditor markdown editor writing drawing ai</tags>
+    <summary>Writing, drawing, and AI workspace</summary>
+    <description>Zditor is a workspace for writing, drawing, and AI collaboration.</description>
+  </metadata>
+  <files>
+    <file src="tools\**" target="tools" />
+  </files>
+</package>

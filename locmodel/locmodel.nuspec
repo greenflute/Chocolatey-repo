@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2015/06/nuspec.xsd">
+  <metadata>
+    <id>locmodel</id>
+    <version>3.5.1</version>
+    <title>LocModel</title>
+    <authors>LocModel</authors>
+    <owners>greenflute</owners>
+    <projectUrl>https://locmodel.com/</projectUrl>
+    <packageSourceUrl>https://github.com/greenflute/Chocolatey-repo/tree/main/locmodel</packageSourceUrl>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <tags>locmodel ai models local</tags>
+    <summary>Local AI model deployment and studio</summary>
+    <description>LocModel is a desktop application for running local AI models.</description>
+  </metadata>
+  <files>
+    <file src="tools\**" target="tools" />
+  </files>
+</package>
